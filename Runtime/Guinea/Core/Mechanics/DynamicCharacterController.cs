@@ -1,6 +1,7 @@
-#define GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
+// #define GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
 using UnityEngine;
-using FMOD.Studio;
+using System;
+
 
 
 #if UNITY_EDITOR
@@ -38,21 +39,20 @@ namespace Guinea.Core.Mechanics
         private Vector3 m_moveDir;
         private Vector3 m_goalVel;
         private Vector3 m_hitVel;
-        private EventInstance m_footStepInstance;
         [SerializeField]private bool m_jump;
 #if GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
         private int m_jumpCount;
         private float m_inTimeForDoubleJump;
 #endif
-
+        public event Action OnJump;
+        public event Action OnGrounded;
         void Update()
         {
-            m_moveDir = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            m_moveDir = new Vector3(0.5f * Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")).normalized;
             if(Input.GetKeyDown(KeyCode.Space) && m_isGrounded)
             {
                 m_jump = true;
             }
-            UpdateSound();
         }
 
 
@@ -71,7 +71,13 @@ namespace Guinea.Core.Mechanics
         void ApplyHoveringForce()
         {
             Vector3 rayDir  = -Vector3.up;
-            m_isGrounded = Physics.Raycast(m_springStartPoint.position, rayDir, out RaycastHit hit, m_springMaxLength, m_layerGround);
+            bool isGrounded = Physics.Raycast(m_springStartPoint.position, rayDir, out RaycastHit hit, m_springMaxLength, m_layerGround);
+            
+            if(isGrounded && !m_isGrounded && m_rb.velocity.y < 0f)
+            {
+                OnGrounded?.Invoke();
+            }
+            m_isGrounded = isGrounded;
             if(m_isGrounded)
             {
                 m_hitVel = Vector3.zero;
@@ -121,6 +127,7 @@ namespace Guinea.Core.Mechanics
 
         void Jump()
         {
+            OnJump?.Invoke(); 
 #if GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
             if(m_jumpCount==1 && Time.time < m_inTimeForDoubleJump)
             {
@@ -149,26 +156,6 @@ namespace Guinea.Core.Mechanics
             Handles.DrawLine(m_springStartPoint.position, m_springStartPoint.position - m_springMaxLength * Vector3.up, 8.0f);
 #endif
         }
-
-        private void UpdateSound()
-        {
-            if(m_moveDir.sqrMagnitude != 0 && m_isGrounded)
-            {
-                m_footStepInstance.getPlaybackState(out PLAYBACK_STATE playbackState);
-                if(playbackState == PLAYBACK_STATE.STOPPED)
-                {
-                    m_footStepInstance.start();
-                }
-                return;
-            }
-        
-            m_footStepInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        }
-
-    void OnDestroy()
-    {
-        m_footStepInstance.Release();
-    }
 
         public static Quaternion ShortestRotation(Quaternion a, Quaternion b)
         {
