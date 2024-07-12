@@ -107,7 +107,10 @@ namespace Guinea.Core.Mechanics
             float accelerationFactor = m_accelerationCurveFactor.Evaluate(Vector3.Dot(m_moveDir, currentVel.normalized));
             m_goalVel = Vector3.MoveTowards(m_goalVel, goalVel - m_hitVel, accelerationFactor * m_acceleration * Time.fixedDeltaTime);
             Vector3 needAccel = (m_goalVel - currentVel) / Time.fixedDeltaTime;
-            m_rb.AddForce(needAccel, ForceMode.Acceleration);
+            if(m_isGrounded)
+            {
+                m_rb.AddForce(needAccel, ForceMode.Acceleration);
+            }
         }
 
         void ApplyUprightForce()
