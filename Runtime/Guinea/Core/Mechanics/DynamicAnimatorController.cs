@@ -1,4 +1,3 @@
-using System;
 using Guinea.Core.Mechanics;
 using UnityEngine;
 
@@ -13,6 +12,7 @@ public class DynamicAnimatorController : MonoBehaviour
     private static readonly int s_speedHash = Animator.StringToHash("Speed");
     private static readonly int s_jumpHash = Animator.StringToHash("Jump");
     private static readonly int s_landingHash = Animator.StringToHash("Landing");
+    private static readonly int s_locomotionHash = Animator.StringToHash("Locomotion");
 
     void OnEnable()
     {
@@ -39,11 +39,16 @@ public class DynamicAnimatorController : MonoBehaviour
     void Update()
     {
         m_localVelocity = transform.InverseTransformVector(m_rb.velocity);
-        float forward = Mathf.Clamp(m_localVelocity.z, -1f, 1f);
+        float forward = m_localVelocity.z;
         float turn = m_localVelocity.x;
         m_animator.SetFloat(s_forwardHash, forward);
         m_animator.SetFloat(s_turnHash, turn);
-        Vector3 velWithoutY = new Vector3(m_rb.velocity.x, 0f, m_rb.velocity.z);
-        m_animator.SetFloat(s_speedHash, Mathf.Abs(velWithoutY.sqrMagnitude)< Mathf.Epsilon ? 1f: velWithoutY.magnitude/2f);
+        Vector3 velWithoutY = new Vector3(turn, 0f, forward);
+        bool isLocomotion = Mathf.Abs(velWithoutY.sqrMagnitude) > Mathf.Epsilon;
+        if (!m_animator.GetBool(s_locomotionHash) && isLocomotion)
+        {
+            m_animator.SetTrigger(s_locomotionHash);
+        }
+        m_animator.SetFloat(s_speedHash, isLocomotion ? velWithoutY.magnitude/2f:1f);
     }
 }

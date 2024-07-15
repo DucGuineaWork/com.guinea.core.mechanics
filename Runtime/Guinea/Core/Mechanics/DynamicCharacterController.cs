@@ -48,7 +48,7 @@ namespace Guinea.Core.Mechanics
         public event Action OnGrounded;
         void Update()
         {
-            m_moveDir = new Vector3(0.5f * Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")).normalized;
+            m_moveDir = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
             if(Input.GetKeyDown(KeyCode.Space) && m_isGrounded)
             {
                 m_jump = true;
