@@ -48,13 +48,12 @@ namespace Guinea.Core.Mechanics
         public event Action OnGrounded;
         void Update()
         {
-            m_moveDir = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-            if(Input.GetKeyDown(KeyCode.Space) && m_isGrounded)
+            MoveRelative(new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")));
+            if(Input.GetKeyDown(KeyCode.Space))
             {
-                m_jump = true;
+                Jump();
             }
         }
-
 
         void FixedUpdate()
         {
@@ -64,11 +63,29 @@ namespace Guinea.Core.Mechanics
             if(m_jump && m_isGrounded)
             {
                 m_jump = false;
-                Jump();
+                ApplyJump();
             }
         }
 
-        void ApplyHoveringForce()
+        public void Jump()
+        {
+            if(m_isGrounded)
+            {
+                m_jump = true;
+            }
+        }
+
+        public void Move(Vector3 moveDir)
+        {
+            m_moveDir = moveDir;
+        }
+
+        public void MoveRelative(Vector3 moveDir)
+        {
+            m_moveDir = transform.TransformDirection(moveDir);
+        }
+
+        private void ApplyHoveringForce()
         {
             Vector3 rayDir  = -Vector3.up;
             bool isGrounded = Physics.Raycast(m_springStartPoint.position, rayDir, out RaycastHit hit, m_springMaxLength, m_layerGround);
@@ -99,7 +116,7 @@ namespace Guinea.Core.Mechanics
             }
         }
 
-        void ApplyLocomotion()
+        private void ApplyLocomotion()
         {
             Vector3 goalVel = m_moveDir * m_maxSpeed;
             Vector3 currentVel = Vector3.ProjectOnPlane(m_rb.velocity, Vector3.up);
@@ -113,7 +130,7 @@ namespace Guinea.Core.Mechanics
             }
         }
 
-        void ApplyUprightForce()
+        private void ApplyUprightForce()
         {
             Quaternion targetRot = Quaternion.AngleAxis(m_YEuler, Vector3.up);
             Quaternion rot = ShortestRotation(targetRot, m_rb.rotation);
@@ -128,7 +145,7 @@ namespace Guinea.Core.Mechanics
             m_rb.AddTorque(rotAxis*rotRad * m_uprightSpringStrength - m_rb.angularVelocity * m_uprightSpringDamper);
         }
 
-        void Jump()
+        private void  ApplyJump()
         {
             OnJump?.Invoke(); 
 #if GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP

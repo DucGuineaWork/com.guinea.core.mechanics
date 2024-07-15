@@ -222,7 +222,6 @@ GameObject:
   - component: {fileID: 2227835519687325856}
   - component: {fileID: 3053729942958234450}
   - component: {fileID: 3053729943347436302}
-  - component: {fileID: 3053729943347436303}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -313,7 +312,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  m_jumpForce: 16
+  m_jumpForce: 12
   m_jump: 0
 --- !u!136 &3053729942958234450
 CapsuleCollider:
@@ -345,18 +344,6 @@ MonoBehaviour:
   m_animator: {fileID: 209014393}
   m_localVelocity: {x: 0, y: 0, z: 0}
   m_dynamicCharacterController: {fileID: 2227835519687325856}
---- !u!114 &3053729943347436303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2227835519687325870}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40336acc6eaa5da46a36d1ae4911a626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2227835520425683375
 GameObject:
   m_ObjectHideFlags: 0
@@ -484,6 +471,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &209014395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309339454063061097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40336acc6eaa5da46a36d1ae4911a626, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1828573492654994131 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c47f285c0e63fbc43962bb2e478081b7,
