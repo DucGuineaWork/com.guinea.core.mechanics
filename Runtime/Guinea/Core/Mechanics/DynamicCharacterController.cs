@@ -73,7 +73,7 @@ namespace Guinea.Core.Mechanics
             Vector3 rayDir  = -Vector3.up;
             bool isGrounded = Physics.Raycast(m_springStartPoint.position, rayDir, out RaycastHit hit, m_springMaxLength, m_layerGround);
             
-            if(isGrounded && !m_isGrounded && m_rb.velocity.y < 0f)
+            if(isGrounded && !m_isGrounded && m_rb.velocity.y < -0.5f)
             {
                 OnGrounded?.Invoke();
             }

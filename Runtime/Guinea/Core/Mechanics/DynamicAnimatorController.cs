@@ -44,7 +44,7 @@ public class DynamicAnimatorController : MonoBehaviour
         m_animator.SetFloat(s_forwardHash, forward);
         m_animator.SetFloat(s_turnHash, turn);
         Vector3 velWithoutY = new Vector3(turn, 0f, forward);
-        bool isLocomotion = Mathf.Abs(velWithoutY.sqrMagnitude) > Mathf.Epsilon;
+        bool isLocomotion = Mathf.Abs(velWithoutY.sqrMagnitude) > 0.1f;
         if (!m_animator.GetBool(s_locomotionHash) && isLocomotion)
         {
             m_animator.SetTrigger(s_locomotionHash);
