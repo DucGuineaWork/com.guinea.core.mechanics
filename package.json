@@ -5,6 +5,7 @@
     "description": "Guinea Core Mechanics Package",
     "unity": "2022.3",
     "dependencies": {
+      "com.unity.animation.rigging": "1.1.1"
     },
     "keywords": [],
     "author": {
