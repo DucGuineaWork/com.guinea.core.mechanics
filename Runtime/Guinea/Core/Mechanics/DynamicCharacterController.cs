@@ -90,7 +90,7 @@ namespace Guinea.Core.Mechanics
             Vector3 rayDir  = -Vector3.up;
             bool isGrounded = Physics.Raycast(m_springStartPoint.position, rayDir, out RaycastHit hit, m_springMaxLength, m_layerGround);
             
-            if(isGrounded && !m_isGrounded && m_rb.velocity.y < -0.5f)
+            if(isGrounded && !m_isGrounded && m_rb.velocity.y < -5f)
             {
                 OnGrounded?.Invoke();
             }
@@ -119,8 +119,8 @@ namespace Guinea.Core.Mechanics
         private void ApplyLocomotion()
         {
             Vector3 goalVel = m_moveDir * m_maxSpeed;
-            Vector3 currentVel = Vector3.ProjectOnPlane(m_rb.velocity, Vector3.up);
-            m_hitVel.y = 0f;
+            Vector3 currentVel = m_rb.velocity;
+            currentVel.y = m_hitVel.y = 0f;
             float accelerationFactor = m_accelerationCurveFactor.Evaluate(Vector3.Dot(m_moveDir, currentVel.normalized));
             m_goalVel = Vector3.MoveTowards(m_goalVel, goalVel - m_hitVel, accelerationFactor * m_acceleration * Time.fixedDeltaTime);
             Vector3 needAccel = (m_goalVel - currentVel) / Time.fixedDeltaTime;

@@ -36,7 +36,7 @@ public class DynamicAnimatorController : MonoBehaviour
         m_animator.SetTrigger(s_jumpHash);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         m_localVelocity = transform.InverseTransformVector(m_rb.velocity);
         float forward = m_localVelocity.z;
