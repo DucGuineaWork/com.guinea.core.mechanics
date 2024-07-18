@@ -39,7 +39,7 @@ PrefabInstance:
     - target: {fileID: 2227835519687325870, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
         type: 3}
       propertyPath: m_Name
-      value: CharacterWithVIsual Variant
+      value: CharacterWithVisual Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2227835519687325871, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
         type: 3}
@@ -98,24 +98,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e, type: 3}
---- !u!114 &3053729943154924944 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2227835519687325856, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3786361453000058160}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3053729943154924958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 857b1aa380b3136448a1ff35c4b96a4f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!54 &3053729943154924945 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 2227835519687325857, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3786361453000058160}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3053729943154924958 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2227835519687325870, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
@@ -136,25 +118,3 @@ CapsuleCollider:
   m_Height: 2.5
   m_Direction: 1
   m_Center: {x: 0, y: 1.25, z: 0}
---- !u!114 &1495823510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3053729943154924958}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cad3b964202f55545ba0484c84a0977e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_rb: {fileID: 3053729943154924945}
-  m_animator: {fileID: 3786361453065907017}
-  m_localVelocity: {x: 0, y: 0, z: 0}
-  m_dynamicCharacterController: {fileID: 3053729943154924944}
---- !u!95 &3786361453065907017 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 209014393, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
-    type: 3}
-  m_PrefabInstance: {fileID: 3786361453000058160}
-  m_PrefabAsset: {fileID: 0}
