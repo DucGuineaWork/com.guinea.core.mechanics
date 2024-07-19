@@ -39,7 +39,6 @@ namespace Guinea.Core.Mechanics
         private Vector3 m_moveDir;
         private Vector3 m_goalVel;
         private Vector3 m_hitVel;
-        [SerializeField]private bool m_jump;
 #if GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
         private int m_jumpCount;
         private float m_inTimeForDoubleJump;
@@ -58,20 +57,15 @@ namespace Guinea.Core.Mechanics
         void FixedUpdate()
         {
             ApplyHoveringForce();
-            ApplyUprightForce();
+            // ApplyUprightForce();
             ApplyLocomotion();
-            if(m_jump && m_isGrounded)
-            {
-                m_jump = false;
-                ApplyJump();
-            }
         }
 
         public void Jump()
         {
             if(m_isGrounded)
             {
-                m_jump = true;
+                ApplyJump();
             }
         }
 
