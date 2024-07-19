@@ -39,16 +39,14 @@ public class DynamicAnimatorController : MonoBehaviour
     void Update()
     {
         m_localVelocity = transform.InverseTransformVector(m_rb.velocity);
-        float forward = m_localVelocity.z;
-        float turn = m_localVelocity.x;
-        m_animator.SetFloat(s_forwardHash, forward);
-        m_animator.SetFloat(s_turnHash, turn);
-        Vector3 velWithoutY = new Vector3(turn, 0f, forward);
-        bool isLocomotion = Mathf.Abs(velWithoutY.sqrMagnitude) > 0.1f;
+        m_localVelocity.y = 0f;
+        m_animator.SetFloat(s_forwardHash, m_localVelocity.z);
+        m_animator.SetFloat(s_turnHash, m_localVelocity.x);
+        bool isLocomotion = Mathf.Abs(m_localVelocity.sqrMagnitude) > 0.1f;
         if (!m_animator.GetBool(s_locomotionHash) && isLocomotion)
         {
             m_animator.SetTrigger(s_locomotionHash);
         }
-        m_animator.SetFloat(s_speedHash, isLocomotion ? velWithoutY.magnitude/2f:1f);
+        m_animator.SetFloat(s_speedHash, isLocomotion ? m_localVelocity.magnitude/2f:1f);
     }
 }
