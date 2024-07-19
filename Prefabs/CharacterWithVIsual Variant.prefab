@@ -36,10 +36,20 @@ PrefabInstance:
       propertyPath: m_maxSpeed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 2227835519687325857, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 2227835519687325857, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2227835519687325870, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
         type: 3}
       propertyPath: m_Name
-      value: CharacterWithVisual Variant
+      value: CharacterWithVIsual Variant
       objectReference: {fileID: 0}
     - target: {fileID: 2227835519687325871, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
         type: 3}
@@ -96,5 +106,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 3053729942958234450, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 209014395, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1cb8ecea3d7866e4b817fe6d4b2b791e, type: 3}
