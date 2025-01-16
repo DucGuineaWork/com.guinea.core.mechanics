@@ -1,4 +1,4 @@
-// #define GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
+ // #define GUINEA_CORE_MECHANICS_USE_DOUBLE_JUMP
 using UnityEngine;
 using System;
 
