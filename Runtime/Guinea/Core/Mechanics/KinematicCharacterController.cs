@@ -23,7 +23,7 @@ namespace Guinea.Core.Mechanics
         private bool m_isGrounded;
         private float m_yVelocityAdjustment;
         [SerializeField] private Vector3 m_currentVelocity;
-        private Transform m_platformer;
+        // private Transform m_platformer;
         private float m_jumpVelocity;
 
         void Start()
@@ -37,7 +37,10 @@ namespace Guinea.Core.Mechanics
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")).normalized;
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Jump(2f);
+                if (m_isGrounded)
+                {
+                    FreeJump(2f);
+                }
             }
             MoveRelative(direction.normalized);
         }
@@ -45,22 +48,24 @@ namespace Guinea.Core.Mechanics
         void FixedUpdate()
         {
             ApplyHoveringForce(out RaycastHit hit);
-            ApplyLocomotion();
+            if (m_isGrounded)
+            {
+                FreeLocomotion();
+            }
             if (m_isGrounded)
             {
                 m_currentVelocity.y = 0f;
                 if (hit.collider.gameObject.CompareTag(m_platformerTag))
                 {
-                    m_platformer = hit.transform;
+                    transform.parent = hit.transform;
                 }
             }
             else
             {
-                m_platformer = null;
+                transform.parent = null;
             }
 
-            transform.parent = m_platformer;
-            if (m_platformer != null)
+            if (transform.parent != null)
             {
                 m_currentVelocity.y += m_jumpVelocity;
                 transform.localPosition += transform.InverseTransformDirection(m_currentVelocity) * Time.fixedDeltaTime;
@@ -73,7 +78,7 @@ namespace Guinea.Core.Mechanics
             m_jumpVelocity = 0f;
         }
 
-        public void Jump(float height)
+        public void FreeJump(float height)
         {
             m_jumpVelocity = Mathf.Sqrt(-2f * Physics.gravity.y * height);
         }
@@ -88,7 +93,7 @@ namespace Guinea.Core.Mechanics
             m_moveDir = transform.TransformDirection(moveDir);
         }
 
-        private void ApplyLocomotion()
+        private void FreeLocomotion()
         {
             if (!CastRay(m_moveDir, out RaycastHit hit, 0.2f))
             {
