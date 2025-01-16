@@ -38,7 +38,7 @@ public class DynamicAnimatorController : MonoBehaviour
 
     void Update()
     {
-        m_localVelocity = transform.InverseTransformVector(m_rb.velocity);
+        m_localVelocity = transform.InverseTransformVector(m_rb.linearVelocity);
         m_localVelocity.y = 0f;
         m_animator.SetFloat(s_forwardHash, m_localVelocity.z);
         m_animator.SetFloat(s_turnHash, m_localVelocity.x);
