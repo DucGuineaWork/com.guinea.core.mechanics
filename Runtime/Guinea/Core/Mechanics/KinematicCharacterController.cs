@@ -24,6 +24,7 @@ namespace Guinea.Core.Mechanics
         private float m_yVelocityAdjustment;
         [SerializeField] private Vector3 m_currentVelocity;
         private Transform m_platformer;
+        private float m_jumpVelocity;
 
         void Start()
         {
@@ -34,6 +35,10 @@ namespace Guinea.Core.Mechanics
         void Update()
         {
             Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")).normalized;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Jump(2f);
+            }
             MoveRelative(direction.normalized);
         }
 
@@ -57,13 +62,20 @@ namespace Guinea.Core.Mechanics
             transform.parent = m_platformer;
             if (m_platformer != null)
             {
+                m_currentVelocity.y += m_jumpVelocity;
                 transform.localPosition += transform.InverseTransformDirection(m_currentVelocity) * Time.fixedDeltaTime;
             }
             else
             {
-                m_currentVelocity.y += m_yVelocityAdjustment;
+                m_currentVelocity.y += m_yVelocityAdjustment + m_jumpVelocity;
                 m_rb.MovePosition(m_rb.position + m_currentVelocity * Time.fixedDeltaTime);
             }
+            m_jumpVelocity = 0f;
+        }
+
+        public void Jump(float height)
+        {
+            m_jumpVelocity = Mathf.Sqrt(-2f * Physics.gravity.y * height);
         }
 
         public void Move(Vector3 moveDir)
