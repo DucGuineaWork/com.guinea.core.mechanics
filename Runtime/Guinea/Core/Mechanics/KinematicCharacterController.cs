@@ -21,8 +21,10 @@ namespace Guinea.Core.Mechanics
         [SerializeField] float m_speed;
         [SerializeField] float m_acceleration;
         private bool m_isGrounded;
+        private bool m_isOverlapped;
+
         private float m_yVelocityAdjustment;
-        [SerializeField] private Vector3 m_currentVelocity;
+        private Vector3 m_currentVelocity;
         // private Transform m_platformer;
         private float m_jumpVelocity;
 
@@ -34,7 +36,7 @@ namespace Guinea.Core.Mechanics
 
         void Update()
         {
-            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical")).normalized;
+            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if (m_isGrounded)
@@ -47,11 +49,8 @@ namespace Guinea.Core.Mechanics
 
         void FixedUpdate()
         {
-            ApplyHoveringForce(out RaycastHit hit);
-            if (m_isGrounded)
-            {
-                FreeLocomotion();
-            }
+            m_isGrounded = ApplyHoveringForce(out RaycastHit hit);
+            m_isOverlapped = CheckCapsule();
             if (m_isGrounded)
             {
                 m_currentVelocity.y = 0f;
@@ -59,6 +58,7 @@ namespace Guinea.Core.Mechanics
                 {
                     transform.parent = hit.transform;
                 }
+                FreeLocomotion();
             }
             else
             {
@@ -67,13 +67,19 @@ namespace Guinea.Core.Mechanics
 
             if (transform.parent != null)
             {
-                m_currentVelocity.y += m_jumpVelocity;
-                transform.localPosition += transform.InverseTransformDirection(m_currentVelocity) * Time.fixedDeltaTime;
+                if (!m_isOverlapped)
+                {
+                    m_currentVelocity.y += m_jumpVelocity;
+                    transform.localPosition += transform.InverseTransformDirection(m_currentVelocity) * Time.fixedDeltaTime;
+                }
             }
             else
             {
-                m_currentVelocity.y += m_yVelocityAdjustment + m_jumpVelocity;
-                m_rb.MovePosition(m_rb.position + m_currentVelocity * Time.fixedDeltaTime);
+                if (!m_isOverlapped)
+                {
+                    m_currentVelocity.y += m_yVelocityAdjustment + m_jumpVelocity;
+                    m_rb.MovePosition(m_rb.position + m_currentVelocity * Time.fixedDeltaTime);
+                }
             }
             m_jumpVelocity = 0f;
         }
@@ -95,7 +101,7 @@ namespace Guinea.Core.Mechanics
 
         private void FreeLocomotion()
         {
-            if (!CastRay(m_moveDir, out RaycastHit hit, 0.2f))
+            if (!m_isOverlapped)
             {
                 Vector3 velocity = m_moveDir * m_speed;
                 Vector3 currentVelocity = m_currentVelocity;
@@ -106,21 +112,23 @@ namespace Guinea.Core.Mechanics
             }
             else
             {
-                m_currentVelocity.x = m_currentVelocity.z = 0f;
+                m_currentVelocity.x = 0f;
+                m_currentVelocity.z = 0f;
+                m_rb.position = m_rb.position - m_moveDir * m_capsuleCollider.radius * 0.1f;
             }
         }
 
-        private bool CastRay(Vector3 direction, out RaycastHit hit, float maxDistance = Mathf.Infinity)
+        private bool CheckCapsule()
         {
-            Vector3 point0 = m_point0 + m_capsuleCollider.transform.position;
-            Vector3 point1 = m_point1 + m_capsuleCollider.transform.position;
-            return Physics.CapsuleCast(point0, point1, m_capsuleCollider.radius, direction, out hit, maxDistance, m_layerMask);
+            Vector3 point0 = m_point0 + m_rb.position;
+            Vector3 point1 = m_point1 + m_rb.position;
+            return Physics.CheckCapsule(point0 + m_moveDir * 0.1f, point1 + m_moveDir * 0.1f, m_capsuleCollider.radius, m_layerMask);
         }
 
-        private void ApplyHoveringForce(out RaycastHit hit)
+        private bool ApplyHoveringForce(out RaycastHit hit)
         {
-            m_isGrounded = Physics.Raycast(m_checkPoint.position, -m_checkPoint.up, out hit, m_maxLength, m_layerMask);
-            if (m_isGrounded)
+            bool isGrounded = Physics.Raycast(m_checkPoint.position, -m_checkPoint.up, out hit, m_maxLength, m_layerMask);
+            if (isGrounded)
             {
                 m_yVelocityAdjustment = 0.5f * (m_maxLength - hit.distance) / Time.fixedDeltaTime; // TODO: Adjustment with threshold
             }
@@ -128,6 +136,7 @@ namespace Guinea.Core.Mechanics
             {
                 m_yVelocityAdjustment = Physics.gravity.y * Time.fixedDeltaTime;
             }
+            return isGrounded;
         }
 
         void OnDrawGizmos()
@@ -141,9 +150,9 @@ namespace Guinea.Core.Mechanics
             Handles.DrawLine(m_checkPoint.position, m_checkPoint.position - m_maxLength * Vector3.up, 8.0f);
             if (Application.isPlaying)
             {
-                Vector3 point0 = m_point0 + m_capsuleCollider.transform.position + m_moveDir * m_speed * Time.fixedDeltaTime;
-                Vector3 point1 = m_point1 + m_capsuleCollider.transform.position + m_moveDir * m_speed * Time.fixedDeltaTime;
-                DrawWireCapsule(point0, point1, m_capsuleCollider.radius, Color.yellow);
+                Vector3 point0 = m_point0 + m_rb.position;
+                Vector3 point1 = m_point1 + m_rb.position;
+                DrawWireCapsule(point0 + m_moveDir * m_capsuleCollider.radius * 0.1f, point1 + m_moveDir * m_capsuleCollider.radius * 0.1f, m_capsuleCollider.radius, Color.yellow);
             }
 #endif
         }
