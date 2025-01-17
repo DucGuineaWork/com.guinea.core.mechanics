@@ -51,6 +51,7 @@ namespace Guinea.Core.Mechanics
         {
             m_isGrounded = ApplyHoveringForce(out RaycastHit hit);
             m_isOverlapped = CheckCapsule();
+            FreeLocomotion();
             if (m_isGrounded)
             {
                 m_currentVelocity.y = 0f;
@@ -58,7 +59,6 @@ namespace Guinea.Core.Mechanics
                 {
                     transform.parent = hit.transform;
                 }
-                FreeLocomotion();
             }
             else
             {
@@ -101,20 +101,23 @@ namespace Guinea.Core.Mechanics
 
         private void FreeLocomotion()
         {
+            Vector3 currentVelocity = m_currentVelocity;
+            currentVelocity.y = 0f;
             if (!m_isOverlapped)
             {
-                Vector3 velocity = m_moveDir * m_speed;
-                Vector3 currentVelocity = m_currentVelocity;
-                currentVelocity.y = 0f;
-                velocity = Vector3.MoveTowards(currentVelocity, velocity, m_acceleration * Time.fixedDeltaTime);
-                m_currentVelocity.x = velocity.x;
-                m_currentVelocity.z = velocity.z;
+                if (m_isGrounded)
+                {
+                    Vector3 velocity = m_moveDir * m_speed;
+                    velocity = Vector3.MoveTowards(currentVelocity, velocity, m_acceleration * Time.fixedDeltaTime);
+                    m_currentVelocity.x = velocity.x;
+                    m_currentVelocity.z = velocity.z;
+                }
             }
             else
             {
                 m_currentVelocity.x = 0f;
                 m_currentVelocity.z = 0f;
-                m_rb.position = m_rb.position - m_moveDir * m_capsuleCollider.radius * 0.1f;
+                m_rb.position = m_rb.position - currentVelocity.normalized * m_capsuleCollider.radius * 0.2f;
             }
         }
 
