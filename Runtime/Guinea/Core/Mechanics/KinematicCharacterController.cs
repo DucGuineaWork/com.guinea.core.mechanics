@@ -24,6 +24,7 @@ namespace Guinea.Core.Mechanics
         private bool m_isOverlapped;
 
         private float m_yVelocityAdjustment;
+        private Vector3 m_previousVelocity;
         private Vector3 m_currentVelocity;
         // private Transform m_platformer;
         private float m_jumpVelocity;
@@ -65,23 +66,25 @@ namespace Guinea.Core.Mechanics
                 transform.parent = null;
             }
 
+            m_currentVelocity.y += m_yVelocityAdjustment + m_jumpVelocity;
+            if (m_isOverlapped)
+            {
+                m_currentVelocity.x = 0f;
+                m_currentVelocity.z = 0f;
+            }
+
+            Vector3 immeditateVelocity = 0.5f * (m_previousVelocity + m_currentVelocity);
+
             if (transform.parent != null)
             {
-                if (!m_isOverlapped)
-                {
-                    m_currentVelocity.y += m_jumpVelocity;
-                    transform.localPosition += transform.InverseTransformDirection(m_currentVelocity) * Time.fixedDeltaTime;
-                }
+                transform.localPosition += transform.InverseTransformDirection(immeditateVelocity) * Time.fixedDeltaTime;
             }
             else
             {
-                if (!m_isOverlapped)
-                {
-                    m_currentVelocity.y += m_yVelocityAdjustment + m_jumpVelocity;
-                    m_rb.MovePosition(m_rb.position + m_currentVelocity * Time.fixedDeltaTime);
-                }
+                m_rb.MovePosition(m_rb.position + immeditateVelocity * Time.fixedDeltaTime);
             }
             m_jumpVelocity = 0f;
+            m_previousVelocity = m_currentVelocity;
         }
 
         public void FreeJump(float height)
@@ -115,8 +118,6 @@ namespace Guinea.Core.Mechanics
             }
             else
             {
-                m_currentVelocity.x = 0f;
-                m_currentVelocity.z = 0f;
                 m_rb.position = m_rb.position - currentVelocity.normalized * m_capsuleCollider.radius * 0.2f;
             }
         }
@@ -133,7 +134,7 @@ namespace Guinea.Core.Mechanics
             bool isGrounded = Physics.Raycast(m_checkPoint.position, -m_checkPoint.up, out hit, m_maxLength, m_layerMask);
             if (isGrounded)
             {
-                m_yVelocityAdjustment = 0.5f * (m_maxLength - hit.distance) / Time.fixedDeltaTime; // TODO: Adjustment with threshold
+                m_yVelocityAdjustment = 0.05f * (m_maxLength - hit.distance) / Time.fixedDeltaTime; // TODO: Adjustment with threshold
             }
             else
             {
