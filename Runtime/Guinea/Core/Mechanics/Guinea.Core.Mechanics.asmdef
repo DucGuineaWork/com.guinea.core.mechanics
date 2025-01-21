@@ -1,10 +1,7 @@
 {
     "name": "Guinea.Core.Mechanics",
     "rootNamespace": "",
-    "references": [
-        "GUID:0c752da273b17c547ae705acf0f2adf2",
-        "GUID:621f72c7bcc596647ad6e8a49c988f78"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

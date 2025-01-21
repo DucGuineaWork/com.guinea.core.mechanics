@@ -20,32 +20,25 @@ namespace Guinea.Core.Mechanics
         private Vector3 m_moveDir;
         [SerializeField] float m_speed;
         [SerializeField] float m_acceleration;
+        [SerializeField] bool m_useManualVelocity = true;
         private bool m_isGrounded;
         private bool m_isOverlapped;
-
         private float m_yVelocityAdjustment;
         private Vector3 m_previousVelocity;
         private Vector3 m_currentVelocity;
-        // private Transform m_platformer;
         private float m_jumpVelocity;
+        public bool IsGrounded=>m_isGrounded;
+        private Vector3 m_dersiredVelocity;
+
+        public void SetDesiredVelocity(Vector3 desiredVelocity)
+        {
+            m_dersiredVelocity = desiredVelocity;
+        }
 
         void Start()
         {
             m_point0 = m_capsuleCollider.center + Vector3.up * (m_capsuleCollider.height / 2 - m_capsuleCollider.radius);
             m_point1 = m_capsuleCollider.center - Vector3.up * (m_capsuleCollider.height / 2 - m_capsuleCollider.radius);
-        }
-
-        void Update()
-        {
-            Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (m_isGrounded)
-                {
-                    FreeJump(2f);
-                }
-            }
-            MoveRelative(direction.normalized);
         }
 
         void FixedUpdate()
@@ -104,37 +97,54 @@ namespace Guinea.Core.Mechanics
 
         private void FreeLocomotion()
         {
-            Vector3 currentVelocity = m_currentVelocity;
-            currentVelocity.y = 0f;
+            
             if (!m_isOverlapped)
             {
                 if (m_isGrounded)
                 {
-                    Vector3 velocity = m_moveDir * m_speed;
-                    velocity = Vector3.MoveTowards(currentVelocity, velocity, m_acceleration * Time.fixedDeltaTime);
-                    m_currentVelocity.x = velocity.x;
-                    m_currentVelocity.z = velocity.z;
+                    if(m_useManualVelocity)
+                    {
+                        m_currentVelocity = Vector3.MoveTowards(m_currentVelocity, m_dersiredVelocity, m_acceleration * Time.fixedDeltaTime);
+                    }
+                    else
+                    {
+                        Vector3 currentVelocity = m_currentVelocity;
+                        currentVelocity.y = 0f;
+                        Vector3 velocity = m_moveDir * m_speed; // TODO: Add Slope factor
+                        velocity = Vector3.MoveTowards(currentVelocity, velocity, m_acceleration * Time.fixedDeltaTime);
+                        m_currentVelocity.x = velocity.x;
+                        m_currentVelocity.z = velocity.z;
+                    }
                 }
             }
             else
             {
+                Vector3 currentVelocity = m_currentVelocity;
+                currentVelocity.y = 0f;
                 m_rb.position = m_rb.position - currentVelocity.normalized * m_capsuleCollider.radius * 0.2f;
             }
         }
 
         private bool CheckCapsule()
         {
+            if(m_useManualVelocity)
+            {
+                return false;
+            }
             Vector3 point0 = m_point0 + m_rb.position;
             Vector3 point1 = m_point1 + m_rb.position;
-            return Physics.CheckCapsule(point0 + m_moveDir * 0.1f, point1 + m_moveDir * 0.1f, m_capsuleCollider.radius, m_layerMask);
+            // return Physics.CheckCapsule(point0 + m_moveDir * 0.1f, point1 + m_moveDir * 0.1f, m_capsuleCollider.radius, m_layerMask);
+            Vector3 direction = m_currentVelocity;
+            direction.y = 0f;
+            return Physics.Raycast(m_checkPoint.position + transform.up * m_capsuleCollider.radius, direction.normalized, m_capsuleCollider.radius + 0.1f, m_layerMask, QueryTriggerInteraction.Ignore);
         }
 
         private bool ApplyHoveringForce(out RaycastHit hit)
         {
-            bool isGrounded = Physics.Raycast(m_checkPoint.position, -m_checkPoint.up, out hit, m_maxLength, m_layerMask);
+            bool isGrounded = Physics.Raycast(m_checkPoint.position, -m_checkPoint.up, out hit, m_maxLength, m_layerMask, QueryTriggerInteraction.Ignore);
             if (isGrounded)
             {
-                m_yVelocityAdjustment = 0.05f * (m_maxLength - hit.distance) / Time.fixedDeltaTime; // TODO: Adjustment with threshold
+                m_yVelocityAdjustment = 0.2f * (m_maxLength - hit.distance) / Time.fixedDeltaTime; // TODO: Adjustment with threshold
             }
             else
             {
